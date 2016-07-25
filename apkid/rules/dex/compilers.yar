@@ -27,10 +27,10 @@
 
 import "dex"
 
-rule dexlib1
+rule dexlib1 : compiler
 {
   meta:
-    description = "Compiled with Dexlib 1.x"
+    description = "dexlib 1.x"
 
   condition:
     /*
@@ -41,10 +41,10 @@ rule dexlib1
     for any i in (0..dex.header.string_ids_size - 1) : (dex.string_ids[i].offset + dex.string_ids[i].item_size + 1 != dex.string_ids[i + 1].offset)
 }
 
-rule dexlib2
+rule dexlib2 : compiler
 {
   meta:
-    description = "Compiled with Dexlib 2.x"
+    description = "dexlib 2.x"
 
   condition:
     /*
@@ -54,26 +54,26 @@ rule dexlib2
     dex.map_list.map_items[7].type == 0x2002 // TYPE_STRING_DATA_ITEM
 }
 
-rule dexlib2beta
+rule dexlib2beta : compiler
 {
   meta:
-    description = "Compiled with Dexlib 2.x Beta"
+    description = "dexlib 2.x beta"
 
   condition:
     /*
-     * Dexlib2 adds a non-zero interfaces_off to every class_def_item, even if the class doesn't implement an
+     * Dexlib2 adds a non-zero interfaces_offset to every class_def_item, even if the class doesn't implement an
      * interface. It points to 4 null bytes right after string pool. DEX documentation says the value for
-     * interfaces_off should be 0 if there is no interface, which is what DX does. It's enough to check
+     * interfaces_offset should be 0 if there is no interface, which is what DX does. It's enough to check
      * if a single class has an interface which points to null bytes since no one else does this.
      */
     not dexlib1 and not dexlib2 and
-    for any i in (0..dex.header.class_defs_size) : (dex.class_defs[i].interfaces_off > 0 and uint32(dex.class_defs[i].interfaces_off) == 0)
+    for any i in (0..dex.header.class_defs_size) : (dex.class_defs[i].interfaces_offset > 0 and uint32(dex.class_defs[i].interfaces_offset) == 0)
 }
 
-rule dx
+rule dx : compiler
 {
   meta:
-    description = "Compiled with dx"
+    description = "Android SDK (dx)"
 
   condition:
     /*
@@ -86,10 +86,10 @@ rule dx
     dex.map_list.map_items[7].type == 0x2001)    // TYPE_CODE_ITEM
 }
 
-rule dexmerge
+rule dexmerge : compiler
 {
   meta:
-    description = "Compiled with dxmerge"
+    description = "Android SDK (dexmerge)"
 
   condition:
     /*

@@ -27,9 +27,10 @@
 
 import "dex"
 
-rule dexguard {
+rule dexguard : obfuscator
+{
   meta:
-    description = "Obfuscated with DexGuard"
+    description = "DexGuard"
 
   strings:
     $opcodes = {
@@ -60,12 +61,13 @@ rule dexguard {
   condition:
     $opcodes and
     all of ($a, $b, $c) and
-    uint32(dex.header.data_off + dex.header.data_size - 4) == 0
+    uint32(dex.header.data_offset + dex.header.data_size - 4) == 0
 }
 
-rule dexprotector {
+rule dexprotector : obfuscator
+{
   meta:
-    description = "Obfuscated with DexProtect"
+    description = "DexProtect"
 
   strings:
     $method = {
